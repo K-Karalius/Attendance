@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="407.0" prefWidth="595.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.karalius.attendance.MainController">
+   <children>
+      <DatePicker fx:id="datePicker" layoutX="22.0" layoutY="70.0" onAction="#dateIsSelected" prefHeight="26.0" prefWidth="150.0" promptText="date" />
+      <Label layoutX="23.0" layoutY="44.0" prefHeight="17.0" prefWidth="209.0" text="Choose a date for marking attendance" />
+      <Button fx:id="saveButton" layoutX="173.0" layoutY="114.0" mnemonicParsing="false" onAction="#saveAttendance" text="Save changes" />
+      <Button layoutX="349.0" layoutY="316.0" mnemonicParsing="false" onAction="#modifyGroups" text="Add/delete student groups" />
+      <Button layoutX="367.0" layoutY="355.0" mnemonicParsing="false" onAction="#modifyStudents" text="Add/delete students" />
+      <ComboBox fx:id="groupSelector" layoutX="23.0" layoutY="113.0" onAction="#groupSelected" prefHeight="26.0" prefWidth="130.0" promptText="Choose a group" />
+      <Button layoutX="22.0" layoutY="164.0" mnemonicParsing="false" onAction="#saveToPdf" prefHeight="26.0" prefWidth="169.0" text="Save attendance to PDF" />
+      <Button layoutX="23.0" layoutY="303.0" mnemonicParsing="false" onAction="#uploadFromFile" text="Add data from file" />
+      <TextField fx:id="fileName" layoutX="22.0" layoutY="257.0" promptText="file name/path" />
+      <Button layoutX="22.0" layoutY="342.0" mnemonicParsing="false" onAction="#saveToFile" text="Save data to file" />
+      <Label layoutX="23.0" layoutY="234.0" text="Only .csv and .xlsx" />
+   </children>
+</AnchorPane>
