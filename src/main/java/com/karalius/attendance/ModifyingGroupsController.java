@@ -64,7 +64,7 @@ public class ModifyingGroupsController extends EditingController {
     @FXML
     public void backToMainWindow(ActionEvent event) {
         try{
-            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("mainWindowView.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("mainWindowView.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
             Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             stage.setTitle("Attendance of students");

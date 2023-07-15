@@ -6,5 +6,5 @@ module com.karalius.attendance {
     requires itextpdf;
 
     opens com.karalius.attendance to javafx.fxml;
-    exports com.karalius.attendance;
+    exports com.karalius.attendance to javafx.graphics;
 }

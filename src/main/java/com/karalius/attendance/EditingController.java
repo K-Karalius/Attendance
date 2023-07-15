@@ -1,6 +1,5 @@
 package com.karalius.attendance;
 
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,7 +15,7 @@ public abstract class EditingController implements Initializable {
 
     public void backToMainWindow(ActionEvent event){
         try{
-            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("mainWindowView.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("mainWindowView.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
             Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             stage.setTitle("Attendance of students");
