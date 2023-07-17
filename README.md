@@ -2,13 +2,18 @@
 
 An application for tracking students' attendance
 
-![Application](images/uploadingData.png)
+![Application](images/uploadingData.png) ![Attendance](images/attendance.png)
 
-##Features
+## Features
+* add/delete students and groups manually
+* upload/update students and groups from file
+* save chosen date attendance to the PDF file
+
+
 * 
 
 ## Technologies
-Project is created with:
+#### Project is created with:
 
 * Java 17.0.6
 * Maven 3.9.3
