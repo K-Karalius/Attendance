@@ -23,11 +23,3 @@ To build .jar and run the .jar file:
 * `mvnw clean package` builds .jar file
 * `cd ../project_dir/target` locate .jar
 * `./attendance-version-shaded.jar` run the .jar
-
-
-
-$ cd ../project_directory
-$ mvnw clean package
-$ cd project_directory/target
-$ ./attenadance-version-shaded.jar
-```
