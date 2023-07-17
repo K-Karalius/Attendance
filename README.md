@@ -7,10 +7,7 @@ An application for tracking students' attendance
 ## Features
 * add/delete students and groups manually
 * upload/update students and groups from file
-* save chosen date attendance to the PDF file
-
-
-* 
+* save selected date attendance to the PDF
 
 ## Technologies
 #### Project is created with:
