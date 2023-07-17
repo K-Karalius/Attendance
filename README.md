@@ -1,7 +1,7 @@
 ## About
 An application for tracking students' attendance
 
-![Application](readMeImages/uploading data.img)
+![Application](readMeImages/uploadingData.img)
 
 ### Features
 * 
