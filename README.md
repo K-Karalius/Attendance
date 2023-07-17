@@ -1,6 +1,11 @@
 ## About
 An application for tracking students' attendance
 
+[Application](readMeImages/uploadingdata.img)
+
+### Features
+* 
+
 ## Technologies
 Project is created with:
 * Java 17.0.6
