@@ -12,7 +12,7 @@ An application for tracking students' attendance
 ## Technologies
 #### Project is created with:
 
-* Java 17.0.6
+* Java 17.0.7
 * Maven 3.9.3
 * Javafx 19.0.2.1
 	
