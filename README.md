@@ -2,7 +2,7 @@
 
 An application for tracking students' attendance
 
-![Application](images/uploadingData.png) <img src="images/attendance.png"  width="400">
+![Application](images/uploadingData.png) <img src="images/attendance.png"  width="300">
 
 ## Features
 * add/delete students and groups manually
