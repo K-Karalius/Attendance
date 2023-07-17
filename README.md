@@ -1,4 +1,4 @@
-# General
+## About
 An application for tracking students' attendance
 
 ## Technologies
