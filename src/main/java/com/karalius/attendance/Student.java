@@ -12,18 +12,18 @@ enum Attendance{
 public class Student {
 
     private String name;
-    private final HashMap<Date, Attendance> attendanceOnDate;
+    private final HashMap<Date, Attendance> attendanceDates;
     private final ComboBox<Attendance> attendanceComboBox;
 
     public Student(){
-        attendanceOnDate = new HashMap<Date, Attendance>();
+        attendanceDates = new HashMap<Date, Attendance>();
         attendanceComboBox = new ComboBox<Attendance>();
         attendanceComboBox.getItems().addAll(Attendance.unknown, Attendance.present, Attendance.absent);
         attendanceComboBox.setValue(Attendance.unknown);
     }
 
     public void setUpComboBox(Date date){
-        Attendance temp = attendanceOnDate.get(date);
+        Attendance temp = attendanceDates.get(date);
         if(temp != null){
             attendanceComboBox.setValue(temp);
         }else{
@@ -31,7 +31,7 @@ public class Student {
         }
     }
     public String getStudentInfo(Date date){
-        Attendance temp = attendanceOnDate.get(date);
+        Attendance temp = attendanceDates.get(date);
         String attendanceStr;
         if(temp != null){
             attendanceStr = temp.toString();
@@ -51,16 +51,18 @@ public class Student {
         this.name = name;
     }
 
-    public Attendance getAttendanceOnDate(Date date) {
-        return attendanceOnDate.get(date);
-    }
-
     public void setAttendanceOnDate(Date date, Attendance attendance) {
-        attendanceOnDate.put(date, attendance);
+        attendanceDates.put(date, attendance);
+    }
+    public Attendance getAttendanceOnDate(Date date){
+        return attendanceDates.get(date);
     }
 
     public ComboBox<Attendance> getAttendanceComboBox(){
         return attendanceComboBox;
+    }
+    public HashMap<Date, Attendance> getAttendanceDates(){
+        return attendanceDates;
     }
 
 }

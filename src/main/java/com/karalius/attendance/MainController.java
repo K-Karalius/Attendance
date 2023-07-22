@@ -19,10 +19,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 
@@ -124,16 +127,13 @@ public class MainController implements Initializable, IDataManagement {
             if(groupSelector.getValue() != null && datePicker.getValue() != null){
                 Group selectedGroup = findGroup(groupSelector.getValue());
                 for(Student student : selectedGroup.getStudents()){
+                    Date selectedDate = getDate();
                     if(student.getAttendanceComboBox().getValue() == Attendance.present){
-                        LocalDate localDate = datePicker.getValue();
-                        Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
-                        Date selectedDate = Date.from(instant);
                         student.setAttendanceOnDate(selectedDate, Attendance.present);
                     }else if (student.getAttendanceComboBox().getValue() == Attendance.absent){
-                        LocalDate localDate = datePicker.getValue();
-                        Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
-                        Date selectedDate = Date.from(instant);
                         student.setAttendanceOnDate(selectedDate, Attendance.absent);
+                    }else{
+                        student.setAttendanceOnDate(selectedDate, Attendance.unknown);
                     }
                 }
             }
@@ -141,14 +141,19 @@ public class MainController implements Initializable, IDataManagement {
             showAlertBox(e.getMessage());
         }
     }
+
+    public Date getDate(){
+        LocalDate localDate = datePicker.getValue();
+        Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+        return Date.from(instant);
+    }
     @FXML
     public void saveToPdf(){
         if(datePicker.getValue() != null){
 
             try{
-                LocalDate localDate = datePicker.getValue();
-                Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
-                Date selectedDate = Date.from(instant);
+
+                Date selectedDate = getDate();
 
                 Document document = new Document();
                 PdfWriter.getInstance(document, new FileOutputStream("output.pdf"));
@@ -182,11 +187,11 @@ public class MainController implements Initializable, IDataManagement {
     public void saveToFile(){
         try{
             if(fileName.getText().endsWith(".csv")){
-                saveToCVS();
-                showAlertBox("Students uploaded successfully!");
+                saveToCSV();
+                showAlertBox("Data saved!");
             }else if(fileName.getText().endsWith(".xlsx")){
                 saveToXLSX();
-                showAlertBox("Students uploaded successfully!");
+                showAlertBox("Data saved!");
             }else{
                 showAlertBox(".cvs and .xlsx files only!");
             }
@@ -195,84 +200,123 @@ public class MainController implements Initializable, IDataManagement {
         }
     }
 
-    public void saveToCVS() throws Exception{
-        String fileNameStr = fileName.getText();
+    public void saveToCSV() throws Exception{
 
-        File file = new File(fileNameStr);
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-        FileWriter writer = new FileWriter(fileNameStr);
+        String selectedGroup = groupSelector.getValue();
+        if(selectedGroup != null){
+            String fileNameStr = fileName.getText();
 
-        int rows = 0;
-        for(Group group : groups){
-            writer.write(group.getName() + ',');
-            if(rows < group.getStudents().size()){
-                rows = group.getStudents().size();
+            File file = new File(fileNameStr);
+            if (!file.exists()) {
+                file.createNewFile();
             }
-        }
-        writer.write('\n');
+            FileWriter writer = new FileWriter(fileNameStr);
 
-        for(int i = 1; i <= rows; i++){
-            for(Group group : groups){
-                if(i - 1 < group.getStudents().size()){
-                    writer.write(group.getStudents().get(i - 1).getName());
+            Group group = findGroup(selectedGroup);
+            writer.write(selectedGroup + ',');
+
+            ArrayList<Date> tempDates = new ArrayList<>();
+
+            if(group.getStudents().size() != 0){
+                HashMap<Date, Attendance> attendanceDates = group.getStudents().get(0).getAttendanceDates();
+                String dateString;
+                int i = 1;
+                for(Date date : attendanceDates.keySet()) {
+                    SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+                    dateString = formatter.format(date);
+                    tempDates.add(date);
+                    writer.write(dateString);
+                    if(attendanceDates.size() != i){
+                        writer.write(',');
+                    }
+                    i++;
                 }
-
-                if(groups.size() - 1 != groups.indexOf(group)){
-                    writer.write(',');
-                }
-
+                writer.write('\n');
             }
-            writer.write('\n');
+
+            Student student;
+            for(int i = 0; i < group.getStudents().size(); i++){
+                student = group.getStudents().get(i);
+                writer.write(student.getName() + ',');
+
+                Attendance attendance;
+                for(int j = 0 ; j < tempDates.size(); j++){
+                    attendance = student.getAttendanceOnDate(tempDates.get(j));
+                    if(attendance == Attendance.present){
+                        writer.write("+");
+                    }else if(attendance == Attendance.absent){
+                        writer.write("-");
+                    }
+
+                    if(j != tempDates.size() - 1){
+                        writer.write(',');
+                    }
+                }
+                writer.write('\n');
+            }
+            writer.close();
         }
-        writer.close();
     }
-    public void saveToXLSX()throws Exception{
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Students");
+    public void saveToXLSX() throws Exception{
 
-        int rowCount = -1;
-        Row row = sheet.createRow(0);
-        Group group;
-        for(int i = 0; i < groups.size(); i++){
-            group = groups.get(i);
-            Cell groupNameCell = row.createCell(i);
-            groupNameCell.setCellValue(group.getName());
-            if(rowCount < group.getStudents().size()){
-                rowCount = group.getStudents().size();
-            }
-        }
-        for(int i = 1; i <= rowCount; i++){
-            row = sheet.createRow(i);
-            for(int j = 0; j < groups.size(); j++) {
-                group = groups.get(j);
-                if(i - 1 < group.getStudents().size()){
-                    Cell studentNameCell = row.createCell(j);
-                    studentNameCell.setCellValue(group.getStudents().get(i - 1).getName());
-                }else{
-                    Cell studentNameCell = row.createCell(j);
-                    studentNameCell.setCellValue("");
+        String selectedGroup = groupSelector.getValue();
+        if(selectedGroup != null){
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            CreationHelper createHelper = workbook.getCreationHelper();
+            Sheet sheet = workbook.createSheet(selectedGroup);
+
+            Group group = findGroup(selectedGroup);
+            Row row = sheet.createRow(0);
+            row.createCell(0).setCellValue(selectedGroup);
+            if(group.getStudents().size() != 0){
+                HashMap<Date, Attendance> attendanceDates = group.getStudents().get(0).getAttendanceDates();
+                CellStyle cellStyle = workbook.createCellStyle();
+                cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy"));
+                int i = 1;
+                for(Date date : attendanceDates.keySet()){
+                    Cell cell = row.createCell(i);
+                    cell.setCellStyle(cellStyle);
+                    cell.setCellValue(date);
+                    i++;
                 }
-            }
-        }
 
-        FileOutputStream outputStream = new FileOutputStream(fileName.getText());
-        workbook.write(outputStream);
-        workbook.close();
-        outputStream.close();
+
+                Row newRow;
+                Student student;
+                for(int j = 1; j <= group.getStudents().size(); j++) {
+                    newRow = sheet.createRow(j);
+                    student = group.getStudents().get(j - 1);
+                    newRow.createCell(0).setCellValue(student.getName());
+
+                    for (int k = 1; k <= attendanceDates.size(); k++) {
+                        Date date = sheet.getRow(0).getCell(k).getDateCellValue();
+                        Attendance attendance = student.getAttendanceOnDate(date);
+                        Cell cell = newRow.createCell(k);
+                        if (attendance == Attendance.present) {
+                            cell.setCellValue("+");
+                        } else if (attendance == Attendance.absent) {
+                            cell.setCellValue("-");
+                        }
+                    }
+                }
+                sheet.autoSizeColumn(0);
+            }
+
+            FileOutputStream outputStream = new FileOutputStream(fileName.getText());
+            workbook.write(outputStream);
+            workbook.close();
+            outputStream.close();
+        }
     }
 
     public void uploadFromFile() {
         try{
             if(fileName.getText().endsWith(".csv")){
-                uploadFromCVS();
+                uploadFromCSV();
                 checkIfGroupsEmpty();
-                showAlertBox("Students uploaded successfully!");
             } else if(fileName.getText().endsWith(".xlsx")){
                 uploadFromXLSX();
                 checkIfGroupsEmpty();
-                showAlertBox("Students uploaded successfully!");
             } else{
                 showAlertBox(".cvs and .xlsx files only!");
             }
@@ -281,31 +325,56 @@ public class MainController implements Initializable, IDataManagement {
         }
     }
 
-    public void uploadFromCVS() throws Exception{
+    public void uploadFromCSV() throws Exception{
         String fileNameStr = fileName.getText();
         String line;
         BufferedReader reader = new BufferedReader(new FileReader(fileNameStr));
-        String[] groupNames;
-        String[] studentNames;
+        String[] firstLine;
+        String[] data;
+        ArrayList<Date> dates = new ArrayList<>();
 
         line = reader.readLine();
-        groupNames = line.split(",");
-        for(String name : groupNames){
-            if(findGroup(name) == null){
-                Group group = new Group();
-                group.setName(name);
-                groups.add(group);
-            }
+        firstLine = line.split(",");
+
+
+        String groupName = firstLine[0];
+        Group group = findGroup(groupName);
+        if(group == null){
+            group = new Group();
+            group.setName(groupName);
+            groups.add(group);
         }
+
+        String dateInString;
+        Date date;
+        for(int i = 1; i < firstLine.length; i++){
+            dateInString = firstLine[i];
+            date = new SimpleDateFormat("MM/dd/yyyy").parse(dateInString);
+            dates.add(date);
+        }
+
+
+        String studentName;
+        String attendance;
         while((line = reader.readLine()) != null){
-            studentNames = line.split(",");
-            for(int i = 0; i < studentNames.length; i++){
-                Group group = findGroup(groupNames[i]);
-                if(findStudent(findGroup(groupNames[i]),studentNames[i]) == null
-                        && !studentNames[i].isEmpty()){
-                    Student student = new Student();
-                    student.setName(studentNames[i]);
+            data = line.split(",");
+            studentName = data[0];
+
+            for(int j = 1; j < data.length; j++){
+                Student student = findStudent(group, studentName);
+                if(student == null){
+                    student = new Student();
+                    student.setName(studentName);
                     group.getStudents().add(student);
+                }
+
+                attendance = data[j];
+                if(attendance.equals("+")){
+                    student.setAttendanceOnDate(dates.get(j - 1), Attendance.present);
+                }else if(attendance.equals("-")){
+                    student.setAttendanceOnDate(dates.get(j - 1), Attendance.absent);
+                }else{
+                    student.setAttendanceOnDate(dates.get(j - 1), Attendance.unknown);
                 }
             }
         }
@@ -313,33 +382,45 @@ public class MainController implements Initializable, IDataManagement {
     }
 
     public void uploadFromXLSX() throws Exception{
+
         Workbook workbook = WorkbookFactory.create(new File(fileName.getText()));
         Sheet sheet = workbook.getSheetAt(0);
-        Row groupRow = sheet.getRow(0);
-        int numOfGroups = groupRow.getLastCellNum();
+        Row dateRow = sheet.getRow(0);
+        int numOfDates = dateRow.getLastCellNum();
 
-        String groupName;
-        for(int i = 0; i < numOfGroups; i++){
-            groupName = groupRow.getCell(i).getStringCellValue();
-            if(findGroup(groupName) == null){
-                Group group = new Group();
-                group.setName(groupName);
-                groups.add(group);
-            }
+
+        String groupName = dateRow.getCell(0).getStringCellValue();
+        Group group = findGroup(groupName);
+        if(group == null){
+            group = new Group();
+            group.setName(groupName);
+            groups.add(group);
         }
-        String studentName;
-        for(int i = 1; i <= sheet.getLastRowNum(); i++){
-            Row studentRow = sheet.getRow(i);
-            for(int j = 0; j < numOfGroups; j++){
-                if(studentRow.getCell(j) == null){
-                    continue;
-                }
-                studentName = studentRow.getCell(j).getStringCellValue();
-                Group group = findGroup(groupRow.getCell(j).getStringCellValue());
-                if(findStudent(group,studentName) == null){
-                    Student student = new Student();
-                    student.setName(studentName);
-                    group.getStudents().add(student);
+
+        int lastRowNum = sheet.getLastRowNum();
+        for(int i = 1; i <= lastRowNum; i++){
+            String studentName = sheet.getRow(i).getCell(0).getStringCellValue();
+            Student student = findStudent(group, studentName);
+            if(student == null){
+                student = new Student();
+                student.setName(studentName);
+                group.getStudents().add(student);
+            }
+
+            for(int j = 1; j < numOfDates; j++){
+
+                Cell cell = sheet.getRow(i).getCell(j);
+                Date date = sheet.getRow(0).getCell(j).getDateCellValue();
+
+                if(cell != null && cell.getCellType() != CellType.BLANK){
+                    String cellValue = cell.getStringCellValue();
+                    if(cellValue.equals("+")){
+                        student.setAttendanceOnDate(date, Attendance.present);
+                    }else if(cellValue.equals("-")) {
+                        student.setAttendanceOnDate(date, Attendance.absent);
+                    }
+                }else{
+                    student.setAttendanceOnDate(date, Attendance.unknown);
                 }
             }
         }

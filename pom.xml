@@ -7,7 +7,7 @@
     <groupId>com.karalius</groupId>
     <artifactId>attendance</artifactId>
     <version>1.0</version>
-    <name>att</name>
+    <name>atttendance</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,7 +51,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.3</version>
-
         </dependency>
     </dependencies>
 

@@ -6,8 +6,8 @@ public interface IDataManagement {
     void modifyStudents(ActionEvent event);
     void saveAttendance();
     void saveToPdf();
-    void saveToCVS() throws Exception;
+    void saveToCSV() throws Exception;
     void saveToXLSX() throws Exception;
-    void uploadFromCVS() throws Exception;
+    void uploadFromCSV() throws Exception;
     void uploadFromXLSX()throws Exception;
 }
