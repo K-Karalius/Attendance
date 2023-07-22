@@ -32,3 +32,9 @@ An application for tracking students' attendance
 * `mvnw clean package` builds .jar file
 * `cd ../project_dir/target` locate .jar
 * `./attendance-version-shaded.jar` run the .jar
+
+#### Things to note
+
+* The data in files should follow the format of given example files (data1.xlsx, data2.csv)
+* Date format in .csv files should be in format `MM/dd/yyyy` otherwise the program will be unable to read the dates
+
