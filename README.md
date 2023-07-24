@@ -33,7 +33,7 @@ An application for tracking students' attendance
 * `cd ../project_dir/target` locate .jar
 * `./attendance-version-shaded.jar` run the .jar
 
-> **_Things to note:_**
+>  **_IMPORTANT things to note:_**
 
 * The data in files should follow the format of given example files (data1.xlsx, data2.csv)
 * Date format in .csv files should be in format `MM/dd/yyyy` otherwise the program will be unable to read the dates
